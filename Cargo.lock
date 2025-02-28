@@ -465,6 +465,7 @@ dependencies = [
  "bincode",
  "borsh",
  "criterion",
+ "once_cell",
  "protobuf",
  "serde",
  "serde_derive",

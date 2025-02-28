@@ -119,123 +119,150 @@ Memory after deserialize: Y bytes
 Memory used during Bincode: Z bytes
 ---------------------
 ```
+## Result Comparison
 
-## Example Results
+| Format      | Serialization Time (ns) | Serialization Ops/sec | Deserialization Time (ns) | Deserialization Ops/sec |
+|-------------|-------------------------|-----------------------|---------------------------|-------------------------|
+| bcs         | 71.09                   | 14,066,415 ops/sec    | 61.64                     | 16,222,547 ops/sec      |
+| bincode     | 31.90                   | 31,345,959 ops/sec    | 44.01                     | 22,720,093 ops/sec      |
+| borsh       | 31.62                   | 31,621,394 ops/sec    | 69.42                     | 14,404,395 ops/sec      |
+| protobuf    | 67.10                   | 14,903,386 ops/sec    | 79.60                     | 12,563,200 ops/sec      |
+| serde_json  | 70.88                   | 14,108,133 ops/sec    | 118.76                    | 8,420,194 ops/sec       |
+
+
+## Results
 
 ```bash
-Running benches/serialization_benchmark.rs (target/release/deps/serialization_benchmark-f69eddaa2292a108)
-bincode serialize       time:   [29.186 ns 29.284 ns 29.394 ns]
-                        change: [-5.7868% -5.2209% -4.6099%] (p = 0.00 < 0.05)
-                        Performance has improved.
-Found 15 outliers among 100 measurements (15.00%)
-  9 (9.00%) high mild
-  6 (6.00%) high severe
+     Running benches/serialization_benchmark.rs (target/release/deps/serialization_benchmark-e92b3fe8221ea804)
+bincode/serialize       time:   [31.758 ns 31.902 ns 32.083 ns]
+                        change: [+1.7927% +3.0005% +4.0727%] (p = 0.00 < 0.05)
+                        Performance has regressed.
+bincode/deserialize     time:   [43.590 ns 44.014 ns 44.433 ns]
+                        change: [+0.3167% +1.1693% +2.0086%] (p = 0.01 < 0.05)
+                        Change within noise threshold.
+Found 6 outliers among 100 measurements (6.00%)
+  6 (6.00%) high mild
 
-bincode deserialize     time:   [73.928 ns 74.097 ns 74.281 ns]
-                        change: [-4.8341% -4.2228% -3.6148%] (p = 0.00 < 0.05)
+--- Bincode ---
+Memory before: 0 bytes
+Memory after serialize: 34980 bytes
+Memory after deserialize: 130 bytes
+Memory used during Bincode: 35110 bytes
+---------------------
+
+bcs/serialize           time:   [70.838 ns 71.091 ns 71.341 ns]
+                        change: [-0.5128% +0.5360% +1.7766%] (p = 0.39 > 0.05)
+                        No change in performance detected.
+Found 7 outliers among 100 measurements (7.00%)
+  6 (6.00%) high mild
+  1 (1.00%) high severe
+bcs/deserialize         time:   [61.319 ns 61.643 ns 62.015 ns]
+                        change: [-0.4917% +0.3975% +1.2275%] (p = 0.37 > 0.05)
+                        No change in performance detected.
+Found 15 outliers among 100 measurements (15.00%)
+  4 (4.00%) high mild
+  11 (11.00%) high severe
+
+--- BCS ---
+Memory before: 0 bytes
+Memory after serialize: 726 bytes
+Memory after deserialize: 307 bytes
+Memory used during BCS: 1033 bytes
+---------------------
+
+protobuf/serialize      time:   [66.901 ns 67.099 ns 67.323 ns]
+                        change: [-3.0751% -2.1961% -1.3021%] (p = 0.00 < 0.05)
+                        Performance has improved.
+Found 9 outliers among 100 measurements (9.00%)
+  6 (6.00%) high mild
+  3 (3.00%) high severe
+protobuf/deserialize    time:   [79.465 ns 79.598 ns 79.751 ns]
+                        change: [-3.8159% -3.0714% -2.3337%] (p = 0.00 < 0.05)
                         Performance has improved.
 Found 10 outliers among 100 measurements (10.00%)
   5 (5.00%) high mild
   5 (5.00%) high severe
 
---- Bincode ---
-Memory before: 0 bytes
-Memory after serialize: 34266 bytes
-Memory after deserialize: 38 bytes
-Memory used during Bincode: 34304 bytes
----------------------
-
-bcs serialize           time:   [68.777 ns 68.916 ns 69.076 ns]
-                        change: [-6.3500% -5.8003% -5.2386%] (p = 0.00 < 0.05)
-                        Performance has improved.
-Found 13 outliers among 100 measurements (13.00%)
-  4 (4.00%) high mild
-  9 (9.00%) high severe
-
-bcs deserialize         time:   [134.66 ns 134.93 ns 135.25 ns]
-                        change: [-9.2977% -8.5199% -7.8080%] (p = 0.00 < 0.05)
-                        Performance has improved.
-Found 15 outliers among 100 measurements (15.00%)
-  6 (6.00%) high mild
-  9 (9.00%) high severe
-
---- BCS ---
-Memory before: 0 bytes
-Memory after serialize: 26 bytes
-Memory after deserialize: 230 bytes
-Memory used during BCS: 256 bytes
----------------------
-
-protobuf serialize      time:   [66.557 ns 66.693 ns 66.843 ns]
-                        change: [-4.2811% -3.6905% -3.0785%] (p = 0.00 < 0.05)
-                        Performance has improved.
-Found 9 outliers among 100 measurements (9.00%)
-  6 (6.00%) high mild
-  3 (3.00%) high severe
-
-protobuf deserialize    time:   [81.161 ns 81.472 ns 81.807 ns]
-                        change: [-5.0820% -4.4722% -3.7608%] (p = 0.00 < 0.05)
-                        Performance has improved.
-Found 14 outliers among 100 measurements (14.00%)
-  7 (7.00%) high mild
-  7 (7.00%) high severe
-
 --- Protobuf ---
 Memory before: 0 bytes
-Memory after serialize: 46 bytes
-Memory after deserialize: 40 bytes
-Memory used during Protobuf: 86 bytes
+Memory after serialize: 783 bytes
+Memory after deserialize: 153 bytes
+Memory used during Protobuf: 936 bytes
 ---------------------
 
-serde_json serialize    time:   [71.260 ns 71.422 ns 71.602 ns]
-                        change: [-7.2006% -6.5492% -5.8745%] (p = 0.00 < 0.05)
-                        Performance has improved.
-Found 11 outliers among 100 measurements (11.00%)
-  4 (4.00%) high mild
-  7 (7.00%) high severe
-
-serde_json deserialize  time:   [113.50 ns 113.75 ns 114.04 ns]
-                        change: [-1.0152% -0.3046% +0.4558%] (p = 0.42 > 0.05)
+serde_json/serialize    time:   [70.481 ns 70.881 ns 71.289 ns]
+                        change: [-0.9514% -0.0928% +0.7345%] (p = 0.83 > 0.05)
                         No change in performance detected.
-Found 11 outliers among 100 measurements (11.00%)
-  4 (4.00%) high mild
-  7 (7.00%) high severe
+Found 4 outliers among 100 measurements (4.00%)
+  3 (3.00%) high mild
+  1 (1.00%) high severe
+serde_json/deserialize  time:   [118.50 ns 118.76 ns 119.06 ns]
+                        change: [-2.4760% -1.5247% -0.6483%] (p = 0.00 < 0.05)
+                        Change within noise threshold.
+Found 9 outliers among 100 measurements (9.00%)
+  3 (3.00%) high mild
+  6 (6.00%) high severe
 
 --- Serde JSON ---
 Memory before: 0 bytes
-Memory after serialize: 40 bytes
-Memory after deserialize: 444 bytes
-Memory used during Serde JSON: 484 bytes
+Memory after serialize: 769 bytes
+Memory after deserialize: 695 bytes
+Memory used during Serde JSON: 1464 bytes
 ---------------------
 
-borsh serialize         time:   [31.745 ns 31.815 ns 31.896 ns]
-                        change: [-4.0058% -3.5591% -3.0194%] (p = 0.00 < 0.05)
-                        Performance has improved.
-Found 11 outliers among 100 measurements (11.00%)
-  7 (7.00%) high mild
-  4 (4.00%) high severe
-
-borsh deserialize       time:   [69.856 ns 70.025 ns 70.222 ns]
-                        change: [-5.8331% -5.2309% -4.6125%] (p = 0.00 < 0.05)
-                        Performance has improved.
+borsh/serialize         time:   [31.574 ns 31.624 ns 31.683 ns]
+                        change: [-1.3856% -0.5978% +0.1742%] (p = 0.12 > 0.05)
+                        No change in performance detected.
+Found 14 outliers among 100 measurements (14.00%)
+  4 (4.00%) high mild
+  10 (10.00%) high severe
+borsh/deserialize       time:   [69.287 ns 69.423 ns 69.581 ns]
+                        change: [-1.0156% -0.4342% +0.1571%] (p = 0.17 > 0.05)
+                        No change in performance detected.
 Found 15 outliers among 100 measurements (15.00%)
   6 (6.00%) high mild
   9 (9.00%) high severe
 
 --- Borsh ---
 Memory before: 0 bytes
-Memory after serialize: 30 bytes
-Memory after deserialize: 34 bytes
-Memory used during Borsh: 64 bytes
+Memory after serialize: 736 bytes
+Memory after deserialize: 352 bytes
+Memory used during Borsh: 1088 bytes
 ---------------------
 
+Total estimated serialize time of group 'bincode': 31.902 ns
+Total estimated deserialize time of group 'bincode': 44.014 ns
+Total estimated serialize ops of group 'bincode': 31345959 ops/sec
+Total estimated deserialize ops of group 'bincode': 22720093 ops/sec
+Total estimated serialize time of group 'bcs': 71.091 ns
+Total estimated deserialize time of group 'bcs': 61.643 ns
+Total estimated serialize ops of group 'bcs': 14066415 ops/sec
+Total estimated deserialize ops of group 'bcs': 16222547 ops/sec
+Total estimated serialize time of group 'protobuf': 67.099 ns
+Total estimated deserialize time of group 'protobuf': 79.598 ns
+Total estimated serialize ops of group 'protobuf': 14903386 ops/sec
+Total estimated deserialize ops of group 'protobuf': 12563200 ops/sec
+Total estimated serialize time of group 'serde_json': 70.881 ns
+Total estimated deserialize time of group 'serde_json': 118.762 ns
+Total estimated serialize ops of group 'serde_json': 14108133 ops/sec
+Total estimated deserialize ops of group 'serde_json': 8420194 ops/sec
+Total estimated serialize time of group 'borsh': 31.624 ns
+Total estimated deserialize time of group 'borsh': 69.423 ns
+Total estimated serialize ops of group 'borsh': 31621394 ops/sec
+Total estimated deserialize ops of group 'borsh': 14404395 ops/sec
+
+----------------------- Serialization Benchmark Results ------------------------
+Format       | Serialization Time (ns) | Serialization Ops/sec | Deserialization Time (ns) | Deserialization Ops/sec
+-------------+----------------------+----------------------+----------------------+---------------------
+bcs          | 71.09                | 14066415 ops/sec     | 61.64                | 16222547 ops/sec    
+bincode      | 31.90                | 31345959 ops/sec     | 44.01                | 22720093 ops/sec    
+borsh        | 31.62                | 31621394 ops/sec     | 69.42                | 14404395 ops/sec    
+protobuf     | 67.10                | 14903386 ops/sec     | 79.60                | 12563200 ops/sec    
+serde_json   | 70.88                | 14108133 ops/sec     | 118.76               | 8420194 ops/sec     
+--------------------------------------------------------------------------------
 
 ```
 
-## Visual Example
-
-![alt text](images/image.png)
-![alt text](images/image-1.png)
 
 ## Conclusion
 
